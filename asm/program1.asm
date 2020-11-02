@@ -45,6 +45,4 @@ compare3:
 finish: 
 	add $s0,$zero,$s0     #return the answer
 	addi $v0,$zero,1      #set syscall type to print int
-	SYSCALL               #print $a0
 	addi $v0,$zero,10     #set syscall type to exit 
-	SYSCALL               #exit

@@ -3,10 +3,10 @@
 # v0 is the result of the number of times t1 alternates given the number of a0 loops
 # basically v0 is the result of when we divide our input a0 by 2, except we don't really divide.  
 
-li $a0, 10 # we want to return our result at index 10!
-li $t0, 0 # t0 is our counter (i)
-li $t1, 0 # t1 is our alternating value between 0 and 1
-li $t2, 0 #t2 is 0.
+addi $a0, $zero, 10 # we want to return our result at index 10!
+addi $t0, $zero, 0 # t0 is our counter (i)
+addi $t1, $zero, 0 # t1 is our alternating value between 0 and 1
+addi $t2, $zero, 0 #t2 is 0.
 loop: 
 	beq  $a0, $t0, end  # if t0 == 10 we jump to end
 	addi $t0, $t0, 1    # adding 1 to the counter
@@ -18,13 +18,11 @@ loop:
 	
 then: 
 addi $t3, $t3, 1
-li $t1, 1
+addi $t1, $zero, 1
 j loop
 
 end:
 # used from fib.asm script since we have set up the registers to do the same thing :)
     add $a0,$zero,$t3     #return the answer
     addi $v0,$zero,1      #set syscall type to print int
-    SYSCALL               #print $a0
     addi $v0,$zero,10     #set syscall type to exit 
-    SYSCALL               #exit
