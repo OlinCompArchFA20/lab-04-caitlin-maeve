@@ -1,4 +1,4 @@
-`include "defines.v"
+`include "lib/definesALU.v"
 `timescale 1ns / 1ps
 
 module ALU_SLICE
