@@ -12,14 +12,20 @@ module ALU
 
   always @* begin
     case(alu_op)
-      default : 
+      default :
         R = {W_CPU-1(1'b0)};
         overflow = 1'b0;
       // math
       `ADD: begin
         {overflow, R} = A + B;
       end
+      `ADDU: begin
+        {overflow, R} = A + B;
+      end
       `SUB: begin
+        {overflow, R} = A + ~B;
+      end
+      `SUBU: begin
         {overflow, R} = A + ~B;
       end
       `SLT: begin
@@ -28,11 +34,24 @@ module ALU
           R[0] = 1;
         overflow = 1'b0;
       end
+      `SLTU: begin
+        R = {W_CPU-1(1'b0)};
+        if (!(A < B)
+          R[0] = 1;
+        overflow = 1'b0;
+      end
       // shifts
       `SLL: begin
-        R =
+        R = A << B; // TODO make sure this is correct
+        overflow = 1'b0;
       end
       `SRL: begin
+        R = A >> B;
+        overflow = 1'b0;
+      end
+      `SRA: begin
+        R = A >>> B;
+        overflow = 1'b0;
       end
       // gates
       `AND: begin
