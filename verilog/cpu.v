@@ -1,18 +1,17 @@
 // TO DO
-// - Make reg for ALU results
 // - Add memory
 // - Finish case implementation
-// - Make sure all values are initialized
 // - Wire
 // - Check types of vars, should they all be reg?
-// - Change from the current case checking, iterate through all of them in
-// order?
-
+// - Verify: 
+//    - implementation of sign extend
 // DESIGN NOTES
 // - Want to call decode for an instruction and get the values 
 
 // QUESTIONS
-// - Do 
+// - Do the registers work for this?
+// - Related, do wires need to be declared outside? Spceifically the ALUb, as
+// it changes which is connected <- could connect a mux
 
 `include "fetch.v"
 `include "decode.v"
