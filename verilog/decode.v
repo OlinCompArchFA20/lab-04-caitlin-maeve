@@ -88,6 +88,12 @@ module DECODE
     alu_src = `ALU_SRC_IMM;  reg_src = `REG_SRC_ALU;
     pc_src  = `PC_SRC_NEXT;  alu_op  = `F_SLT; end
 
+    `SLTIU : begin end
+    wa = rt; ra1 = rs; ra2 = REG_0; reg_wen = `WREN;
+    imm_ext = `IMM_SIGN_EXT; mem_cmd = `MEM_NOP;
+    alu_src = `ALU_SRC_IMM;  reg_src = `REG_SRC_ALU;
+    pc_src  = `PC_SRC_NEXT;  alu_op  = `F_SLTU; end
+
     `OP_ZERO: begin // split them up because of the ALU operation
       case(inst[`FLD_FUNCT]) // keep note of differences in alu_src, alu_op, and reg_wen
         begin
