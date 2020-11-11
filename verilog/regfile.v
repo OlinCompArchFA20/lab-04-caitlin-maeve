@@ -7,13 +7,13 @@
 module REGFILE
  (input                   clk,
   input                   rst,
-  input                   wren,
-  input      [`W_REG-1:0] wa,
-  input      [`W_CPU-1:0] wd,
-  input      [`W_REG-1:0] ra1,
-  input      [`W_REG-1:0] ra2,
-  output reg [`W_CPU-1:0] rd1,
-  output reg [`W_CPU-1:0] rd2);
+  input                   wren, // write enable
+  input      [`W_REG-1:0] wa, // value to write to (Aw)
+  input      [`W_CPU-1:0] wd, // mem to reg
+  input      [`W_REG-1:0] ra1, // read one (Aa) 
+  input      [`W_REG-1:0] ra2, // read two (Ab)
+  output reg [`W_CPU-1:0] rd1, // Da
+  output reg [`W_CPU-1:0] rd2); // Db
 
   /** Storage Element **/
   reg [`W_CPU-1:0] rf [31:0];
