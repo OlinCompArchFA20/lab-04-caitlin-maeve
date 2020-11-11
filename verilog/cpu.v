@@ -1,3 +1,18 @@
+// TO DO
+// - Change from posedge clk to always @* begin
+// - Make reg for ALU results
+// - Add memory
+// - Finish case implementation
+// - Make sure all values are initialized
+// - Wire
+// - Check types of vars, should they all be reg?
+
+// DESIGN NOTES
+// - Want to call decode for an instruction and get the values 
+
+// QUESTIONS
+// - Do 
+
 `include "fetch.v"
 `include "decode.v"
 `include "regfile.v"
@@ -10,9 +25,9 @@ module SINGLE_CYCLE_CPU
   (input clk,
    input rst);
 
-// // // ///
-// DECODE // 
-// // // ///
+// // // ////
+// DECODE  // 
+// // // ////
 reg [`W_CPU-1:0] inst;        // instruction input
 // Register
 reg [`W_REG-1:0] wa;          // reg write address
@@ -33,63 +48,29 @@ reg [`W_ALU_SRC-1:0] alu_src; // ALU Source
 reg [`W_REG_SRC-1:0] reg_src; // Mem to Reg
 DECODE #(.DLY(DLY)) slice_inst(inst, wa, ra1, ra2, reg_wen, imm_ext, imm, addr, alu_op, pc_src, mem_cmd, alu_src, reg_src);
 
-// To regfile
-reg [`W_CPU-1:0] 
-// To ALU
-// To ...
+// // // ////
+// REGFILE //
+// // // ////
+// clk, rst <- from cpu
+// reg_wen, wa, ra1, ra2 <- from decode 
+reg [`W_CPU-1:0] wd;          // mem to reg, input
+reg [`W_CPU-1:0] rd1;         // Da, to ALU, output
+reg [`W_CPU-1:0] rd2;         // Db, to ALUsrc, output
+REGFILE #(.DLY(DLY)) slice_inst(clk, rst, reg_wen, wa, wd, ra1, ra2, rd1, rd2);
 
-reg ALUcntrl;
-reg [`W_CPU-1:0] rd1;
-reg [`W_CPU-1:0] rd2;
-reg [`W_IMM-1:0] imm_extend;
-reg [`W_CPU-1:0] imm_extended;
-reg [`W_CPU-1:0] ALUa; //outputs from reg file, input to alu
-reg [`W_CPU-1:0] ALUb; //outputs from reg file, input to alu
+// // // ////
+// / ALU / //
+// // // ////
+// alu_op <- from decode
+// rd1 <- from REGFILE
+reg [`W_CPU-1:0] ALUb;        // second ALU input
+reg [`W_CPU-1:0] result;      // result, output
+reg overflow;                 // overflow, output <- unused 
+reg isZero;                   // is zero, output <- unused 
+ALU #(.DLY(DLY)) slice_inst(alu_op, rd1, ALUb, result, overflow, isZero);
+
 reg [`PC_UPPER-1:0] PC;
 
-// TO DO
-// - Change from posedge clk to always @* begin
-// - Make reg for ALU results
-// - Instantiate values
-// - Finish case implementation
-// - Make sure all values are initialized
-// - Wire
-// - Check types of vars, should they all be reg?
-
-// DESIGN NOTES
-// - Want to call decode for an instruction and get the values 
-
-// QUESTIONS
-// - Do 
-
-// // Register File control
-//   output reg [`W_REG-1:0]     wa,      // Register Write Address 
-//   output reg [`W_REG-1:0]     ra1,     // Register Read Address 1
-//   output reg [`W_REG-1:0]     ra2,     // Register Read Address 2
-//   output reg                  reg_wen, // Register Write Enable
-//   // Immediate
-//  output reg [`W_IMM_EXT-1:0] imm_ext, // 1-Sign or 0-Zero extend
-//  output reg [`W_IMM-1:0]     imm,     // Immediate Field
-//  // Jump Address
-//  output reg [`W_JADDR-1:0]   addr,    // Jump Addr Field
-//  // ALU Control
-//  output reg [`W_FUNCT-1:0]   alu_op,  // ALU OP
-//  // Muxing
-//  output reg [`W_PC_SRC-1:0]  pc_src,  // PC Source
-//  output reg [`W_MEM_CMD-1:0] mem_cmd, // Mem Command
-//  output reg [`W_ALU_SRC-1:0] alu_src, // ALU Source
-// output reg [`W_REG_SRC-1:0] reg_src);// Mem to Reg  
-
-// instatiate
-REGFILE #(.DLY(DLY)) slice_inst(clk, rst, reg_wen, wa, wd, rs, rt, ALUa, db);
-// reg_wen, rs, rt <- straight from DECODE
-// 
-// wd
-ALU #(.DLY(DLY)) slice_inst(alu_op, ALUa, ALUb, result, overflow, isZero);
-assign R = result;
-// Check overflow - IGNORING
-// xor #DLY xoroverflow(overflow, carry[W-1], carry[W]);
-// assign cout = overflow;
 
 always @* begin
   case(alu_src); // assign ALU B input
