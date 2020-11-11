@@ -1,11 +1,12 @@
 // TO DO
-// - Change from posedge clk to always @* begin
 // - Make reg for ALU results
 // - Add memory
 // - Finish case implementation
 // - Make sure all values are initialized
 // - Wire
 // - Check types of vars, should they all be reg?
+// - Change from the current case checking, iterate through all of them in
+// order?
 
 // DESIGN NOTES
 // - Want to call decode for an instruction and get the values 
@@ -69,17 +70,14 @@ reg overflow;                 // overflow, output <- unused
 reg isZero;                   // is zero, output <- unused 
 ALU #(.DLY(DLY)) slice_inst(alu_op, rd1, ALUb, result, overflow, isZero);
 
+// // // ///
+// Other ///
+// // // ///
+reg [`W_CPU-1:0] imm_extended;// extended imm
 reg [`PC_UPPER-1:0] PC;
 
 
 always @* begin
-  case(alu_src); // assign ALU B input
-    `ALU_SRC_SHA : ALUb = `W_CPU'(inst[`FLD_SHAMT]); // TODO fix so that this is an input of alu
-    `ALU_SRC_IMM : ALUb = imm_extended;
-    `ALU_SRC_REG : ALUb = rd2;
-    default: ALUb = rd2;
-  endcase
-  end
 
   always @* begin
    case(reg_src); // assigns register inputs
@@ -96,16 +94,22 @@ always @* begin
      default:;
    endcase
   end
+  case(alu_src); // assign ALUb
+    `ALU_SRC_SHA : ALUb = `W_CPU'(inst[`FLD_SHAMT]); // TODO fix so that this is an input of alu
+    `ALU_SRC_IMM : ALUb = imm_extended;
+    `ALU_SRC_REG : ALUb = rd2;
+    default: ALUb = rd2;
+  endcase
+  end
 
   always @* begin
-    case(imm_ext);
-    // zero ->'SIZE'(Value
-    // In this Mux we are deciding whether to use sign extend or not (from imm)
-      `IMM_SIGN_EXT :; //imm_extended =  // TODO ask what is happening in these, and how it relates to imm16
-      `IMM_ZERO_EXT : imm_extended = imm_extend; // I think, like basically nothing happens
-      default: imm_extended = imm_extend; // does IMM_ZERO_EXT case by default
+    case(imm_ext); // extending -> not sure if right
+      `IMM_SIGN_EXT : imm_extended = { {(`W_CPU-`W_IMM)`b1}}, imm}; // extend with 1s
+      `IMM_ZERO_EXT : imm_extended = { {(`W_CPU-`W_IMM)`b0}}, imm}; // extend with 0s
+      default: imm_extended = { {(`W_CPU-`W_IMM)`b0}}, imm}; // extend with 0s
     endcase
   end
+
 
 //  TODO: not sure if this is necessary bc of memory.v file
   // always @(posedge clk) begin
