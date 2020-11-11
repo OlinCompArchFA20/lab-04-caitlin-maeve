@@ -10,6 +10,34 @@ module SINGLE_CYCLE_CPU
   (input clk,
    input rst);
 
+// // // ///
+// DECODE // 
+// // // ///
+reg [`W_CPU-1:0] inst;        // instruction input
+// Register
+reg [`W_REG-1:0] wa;          // reg write address
+reg [`W_REG-1:0] ra1;         // reg read address 1 
+reg [`W_REG-1:0] ra2;         // reg read address 2
+reg reg_wen;                  // reg write enable
+// Immediate
+reg [`W_IMM_EXT-1:0] imm_ext; // 1-sign or 0-zero extend
+reg [`W_IMM-1:0] imm;         // imm field
+// Jump Address
+reg [`W_JADDR-1:0] addr;      // jump address  field
+//  ALU Control
+reg [`W_FUNCT-1:0] alu_op;    // alu op
+// Muxing
+reg [`W_PC_SRC-1:0] pc_src;   // PC source
+reg [`W_MEM_CMD-1:0] mem_cmd; // Memory command
+reg [`W_ALU_SRC-1:0] alu_src; // ALU Source
+reg [`W_REG_SRC-1:0] reg_src; // Mem to Reg
+DECODE #(.DLY(DLY)) slice_inst(inst, wa, ra1, ra2, reg_wen, imm_ext, imm, addr, alu_op, pc_src, mem_cmd, alu_src, reg_src);
+
+// To regfile
+reg [`W_CPU-1:0] 
+// To ALU
+// To ...
+
 reg ALUcntrl;
 reg [`W_CPU-1:0] rd1;
 reg [`W_CPU-1:0] rd2;
@@ -24,17 +52,41 @@ reg [`PC_UPPER-1:0] PC;
 // - Make reg for ALU results
 // - Instantiate values
 // - Finish case implementation
+// - Make sure all values are initialized
+// - Wire
+// - Check types of vars, should they all be reg?
 
 // DESIGN NOTES
-// - 
+// - Want to call decode for an instruction and get the values 
 
 // QUESTIONS
 // - Do 
 
-// instatiate (ALU, Reg File, Mem)
-ALU #(.DLY(DLY)) slice_inst(ALUcntrl, ALUa, ALUb, result, overflow, isZero);
+// // Register File control
+//   output reg [`W_REG-1:0]     wa,      // Register Write Address 
+//   output reg [`W_REG-1:0]     ra1,     // Register Read Address 1
+//   output reg [`W_REG-1:0]     ra2,     // Register Read Address 2
+//   output reg                  reg_wen, // Register Write Enable
+//   // Immediate
+//  output reg [`W_IMM_EXT-1:0] imm_ext, // 1-Sign or 0-Zero extend
+//  output reg [`W_IMM-1:0]     imm,     // Immediate Field
+//  // Jump Address
+//  output reg [`W_JADDR-1:0]   addr,    // Jump Addr Field
+//  // ALU Control
+//  output reg [`W_FUNCT-1:0]   alu_op,  // ALU OP
+//  // Muxing
+//  output reg [`W_PC_SRC-1:0]  pc_src,  // PC Source
+//  output reg [`W_MEM_CMD-1:0] mem_cmd, // Mem Command
+//  output reg [`W_ALU_SRC-1:0] alu_src, // ALU Source
+// output reg [`W_REG_SRC-1:0] reg_src);// Mem to Reg  
+
+// instatiate
+REGFILE #(.DLY(DLY)) slice_inst(clk, rst, reg_wen, wa, wd, rs, rt, ALUa, db);
+// reg_wen, rs, rt <- straight from DECODE
+// 
+// wd
+ALU #(.DLY(DLY)) slice_inst(alu_op, ALUa, ALUb, result, overflow, isZero);
 assign R = result;
- #(.DLY(DLY)) slice_inst(ALUcntrl, ALUa, ALUb, result, overflow, isZero);
 // Check overflow - IGNORING
 // xor #DLY xoroverflow(overflow, carry[W-1], carry[W]);
 // assign cout = overflow;
@@ -49,9 +101,15 @@ always @* begin
   end
 
   always @* begin
-   case(reg_src);
+   case(reg_src); // assigns register inputs
    // TODO, what is regsrc?
+      // PC -> pc line
+      // ALU -> register destination
+      // MEM -> from memory to register
+      //
+      // Assign Aw, Dw
       `REG_SRC_PC :; // TODO i don't know what to put down for any of these :( can probably ignore pc for now though
+      
       `REG_SRC_ALU :; // register_to_store_into = alu_output or something ? what are the names
       `REG_SRC_MEM :; // register_to_store_into = memory_we_just_read
      default:;
