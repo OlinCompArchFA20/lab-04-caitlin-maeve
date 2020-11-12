@@ -73,6 +73,17 @@ reg isZero;                   // is zero, output <- unused
 ALU #(.DLY(DLY)) slice_inst(alu_op, rd1, ALUb, result, overflow, isZero);
 
 // // // ////
+//  FETCH  //
+// // // ////
+// clk, rst <- from cpu
+reg [`W_EN-1:0] branch_ctrl = [`W_EN-1:0]'b0;        // unused for now, input
+reg [`W_JADDR-1:0] jump_ctrl = [`W_JADDR-1:0]'b0;    // unused for now, input
+reg [`W_IMM-1:0] imm_addr = [`W_IMM-1:0]'b0;         // related to branch?, input
+reg [`W_CPU-1:0] imm_addr = [`W_CPU-1:0]'b0          // related to branch?, input
+reg [`W_CPU-1:0] pc_next;     // next_pc, output
+FETCH #(.DLY(DLY)) slice_inst(clk, rst, `PC, branch_ctrl, , jump_addr, imm_addr, pc_next);
+
+// // // ////
 // / MEM / //
 // // // ////
 // clk, rst <- from cpu, input
@@ -116,14 +127,10 @@ reg [`W_CPU-1:0] imm_extended; // extended imm
     endcase
   end
 
-//  TODO: eventually add branching case
-
-// instantiate alu, memory
-// wiring things together, wire alu to MEMORY
-
   //SYSCALL Catch
   always @(posedge clk) begin
     //Is the instruction a SYSCALL?
+    pc_next = `PC;
     if (inst[`FLD_OPCODE] == `OP_ZERO &&
         inst[`FLD_FUNCT]  == `F_SYSCAL) begin
         case(rd1)
