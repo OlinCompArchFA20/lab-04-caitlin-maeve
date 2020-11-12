@@ -3,13 +3,13 @@
 // - Finish case implementation
 // - Wire
 // - Check types of vars, should they all be reg?
-// - Verify: 
+// - Verify:
 //    - implementation of sign extend
 // DESIGN NOTES
-// - Want to call decode for an instruction and get the values 
+// - Want to call decode for an instruction and get the values
 
 // QUESTIONS
-// - Do the registers work for this?
+// - Do the registers work for this? (registers vs. wires)
 // - Related, do wires need to be declared outside? Spceifically the ALUb, as
 // it changes which is connected <- could connect a mux
 
@@ -26,12 +26,12 @@ module SINGLE_CYCLE_CPU
    input rst);
 
 // // // ////
-// DECODE  // 
+// DECODE  //
 // // // ////
 reg [`W_CPU-1:0] inst;        // instruction input
 // Register
 reg [`W_REG-1:0] wa;          // reg write address
-reg [`W_REG-1:0] ra1;         // reg read address 1 
+reg [`W_REG-1:0] ra1;         // reg read address 1
 reg [`W_REG-1:0] ra2;         // reg read address 2
 reg reg_wen;                  // reg write enable
 // Immediate
@@ -52,7 +52,7 @@ DECODE #(.DLY(DLY)) slice_inst(inst, wa, ra1, ra2, reg_wen, imm_ext, imm, addr, 
 // REGFILE //
 // // // ////
 // clk, rst <- from cpu
-// reg_wen, wa, ra1, ra2 <- from decode 
+// reg_wen, wa, ra1, ra2 <- from decode
 reg [`W_CPU-1:0] wd;          // mem to reg, input
 reg [`W_CPU-1:0] rd1;         // Da, to ALU, output
 reg [`W_CPU-1:0] rd2;         // Db, to ALUsrc, output
@@ -65,8 +65,8 @@ REGFILE #(.DLY(DLY)) slice_inst(clk, rst, reg_wen, wa, wd, ra1, ra2, rd1, rd2);
 // rd1 <- from REGFILE
 reg [`W_CPU-1:0] ALUb;        // second ALU input
 reg [`W_CPU-1:0] result;      // result, output
-reg overflow;                 // overflow, output <- unused 
-reg isZero;                   // is zero, output <- unused 
+reg overflow;                 // overflow, output <- unused
+reg isZero;                   // is zero, output <- unused
 ALU #(.DLY(DLY)) slice_inst(alu_op, rd1, ALUb, result, overflow, isZero);
 
 // // // ///
@@ -74,9 +74,6 @@ ALU #(.DLY(DLY)) slice_inst(alu_op, rd1, ALUb, result, overflow, isZero);
 // // // ///
 reg [`W_CPU-1:0] imm_extended;// extended imm
 reg [`PC_UPPER-1:0] PC;
-
-
-always @* begin
 
   always @* begin
    case(reg_src); // assigns register inputs
@@ -87,12 +84,14 @@ always @* begin
       //
       // Assign Aw, Dw
       `REG_SRC_PC :; // TODO i don't know what to put down for any of these :( can probably ignore pc for now though
-      
+
       `REG_SRC_ALU :; // register_to_store_into = alu_output or something ? what are the names
       `REG_SRC_MEM :; // register_to_store_into = memory_we_just_read
      default:;
    endcase
   end
+
+  always @* begin
   case(alu_src); // assign ALUb
     `ALU_SRC_SHA : ALUb = `W_CPU'(inst[`FLD_SHAMT]); // TODO fix so that this is an input of alu
     `ALU_SRC_IMM : ALUb = imm_extended;
@@ -110,28 +109,8 @@ always @* begin
   end
 
 
-//  TODO: not sure if this is necessary bc of memory.v file
-  // always @(posedge clk) begin
-  //   case(mem_cmd);
-  //       `MEM_NOP :;
-  //       `MEM_READ :;
-  //       `MEM_WRITE :;
-  //     default:;
-  //   endcase
-  // end
+//  TODO: eventually add branching case
 
-//   TODO: not sure if this is necessary bc of fetch.v file
-  // always @(posedge clk) begin
-  //   case(pc_src);
-  //       `PC_SRC_NEXT : `W_CPU'(inst[`PC_UPPER]);;
-  //       `PC_SRC_BRCH :;
-  //       `PC_SRC_JUMP :;
-  //       `PC_SRC_REGF :;
-  //     default:; // does PC_SRC_NEXT case by default
-  //   endcase
-  // end
-
- // add muxes to the cpu file and stuff
 // instantiate alu, memory
 // wiring things together, wire alu to MEMORY
 
