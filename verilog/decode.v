@@ -193,7 +193,7 @@ module DECODE
         pc_src  = `PC_SRC_NEXT;  alu_op  = `F_SRA; end
 
         `F_SRAV : begin
-        wa = rd; ra1 = rt; ra2 = `REG_0; reg_wen = `WREN;
+        wa = rd; ra1 = rt; ra2 = rs; reg_wen = `WREN;
         imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_NOP;
         alu_src = `ALU_SRC_REG;  reg_src = `REG_SRC_ALU;
         pc_src  = `PC_SRC_NEXT;  alu_op  = `F_SRA; end
