@@ -20,10 +20,10 @@ module ALU
         {overflow, R} = A + B;
       end
       `F_SUB : begin
-        {overflow, R} = A + ~B;
+        {overflow, R} = A - B;
       end
       `F_SUBU : begin
-        {overflow, R} = A + ~B;
+        {overflow, R} = A - B;
       end
       `F_SLT : begin
         R = `W_CPU'b0;
