@@ -18,8 +18,8 @@ module MEMORY
   // Read port for instructions
   input  [`W_CPU-1:0] PC,		// Program counter (instruction address)
   output [`W_CPU-1:0] instruction,
-  
-  // Read/write port for data 
+
+  // Read/write port for data
   input  [`W_MEM_CMD-1:0] mem_cmd,
   input  [`W_CPU-1:0]     data_in,
   input  [`W_CPU-1:0]     data_addr,
@@ -47,7 +47,7 @@ module MEMORY
           mem[ data_addr[13:2] ] = data_in;
       end
   end
-  
+
   // Non-synthesizable debugging code for checking assertions about addresses
   always @(posedge clk) begin // if either of the first two bits aren't 0 you are doing something wrong
     if (mem_cmd == `MEM_READ) begin

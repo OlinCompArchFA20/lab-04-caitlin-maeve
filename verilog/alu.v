@@ -13,45 +13,45 @@ module ALU
   always @* begin
     case(alu_op)
       // math
-      `ADD : begin
+      `F_ADD : begin
         {overflow, R} = A + B;
       end
-      `ADDU : begin
+      `F_ADDU : begin
         {overflow, R} = A + B;
       end
-      `SUB : begin
+      `F_SUB : begin
         {overflow, R} = A + ~B;
       end
-      `SUBU : begin
+      `F_SUBU : begin
         {overflow, R} = A + ~B;
       end
-      `SLT : begin
+      `F_SLT : begin
         R = `W_CPU'b0;
         if (A >= B)
         R = `W_CPU'b1;
         overflow = 1'b0;
       end
-      `SLTU : begin
+      `F_SLTU : begin
         R = `W_CPU'b0;
         if (A >= B)
         R = `W_CPU'b1;
         overflow = 1'b0;
       end
       // shifts
-      `SLL : begin
+      `F_SLL : begin
         R = A << B; // TODO make sure this is correct
         overflow = 1'b0;
       end
-      `SRL : begin
+      `F_SRL : begin
         R = A >> B;
         overflow = 1'b0;
       end
-      `SRA : begin
+      `F_SRA : begin
         R = A >>> B;
         overflow = 1'b0;
       end
       // gates
-      `AND : begin
+      `F_AND : begin
         R = A & B;
         overflow = 1'b0;
       end
@@ -59,15 +59,15 @@ module ALU
       //   R = ~(A & B);
       //   overflow = 1'b0;
       // end // note: not included in lab4b list or opcodes.v
-      `OR : begin
+      `F_OR : begin
         R = A | B;
         overflow = 1'b0;
       end
-      `NOR : begin
+      `F_NOR : begin
         R = ~(A | B);
         overflow = 1'b0;
       end
-      `XOR : begin
+      `F_XOR : begin
         R = A ^ B;
         overflow = 1'b0;
       end

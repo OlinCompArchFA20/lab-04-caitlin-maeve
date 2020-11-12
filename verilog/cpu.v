@@ -28,6 +28,7 @@ module SINGLE_CYCLE_CPU
 // DECODE  //
 // // // ////
 reg [`W_CPU-1:0] inst;        // instruction input
+reg [`W_CPU-1:0] instruction;        // instruction input
 // Register
 reg [`W_REG-1:0] wa;          // reg write address
 reg [`W_REG-1:0] ra1;         // reg read address 1
@@ -45,7 +46,7 @@ reg [`W_PC_SRC-1:0] pc_src;   // PC source
 reg [`W_MEM_CMD-1:0] mem_cmd; // Memory command
 reg [`W_ALU_SRC-1:0] alu_src; // ALU Source
 reg [`W_REG_SRC-1:0] reg_src; // Mem to Reg
-DECODE decode_inst(inst, wa, ra1, ra2, reg_wen, imm_ext, imm, addr, alu_op, pc_src, mem_cmd, alu_src, reg_src);
+DECODE decode_inst(instruction, wa, ra1, ra2, reg_wen, imm_ext, imm, addr, alu_op, pc_src, mem_cmd, alu_src, reg_src);
 
 // main difference to use registers and wires is that you can modify them in the muxes
 
@@ -94,7 +95,7 @@ FETCH fetch_inst(clk, rst, pc_src, branch_ctrl, reg_addr, jump_addr, imm_addr, p
 reg [`W_CPU-1:0] data_in;     // input, unused
 reg [`W_CPU-1:0] data_addr;   // input, output of the ALU
 reg [`W_CPU-1:0] data_out;    // data_out, output
-reg [`W_CPU-1:0] instruction; //instruction, output
+//reg [`W_CPU-1:0] instruction; //instruction, output
 MEMORY stage_MEMORY(clk, rst, pc_current, instruction, mem_cmd, data_in, result, data_out);
 
 // // // ///
@@ -104,10 +105,10 @@ reg [`W_CPU-1:0] imm_extended; // extended imm
 
   always @* begin
    case(reg_src) // assigns wd (Dw)
-      `REG_SRC_PC : begin wd = pc_current; end // wd = `PC
       `REG_SRC_ALU : begin wd = result; end
       `REG_SRC_MEM : begin wd = data_out; end
-     default: begin wd = ALUb; end
+      `REG_SRC_PC : begin wd = pc_current; end // wd = `PC
+     default: begin wd = result; end
    endcase
   end
 
@@ -122,7 +123,8 @@ reg [`W_CPU-1:0] imm_extended; // extended imm
 
   always @* begin // w_cpu - w_imm gets you some really weird results on duckduckgo
     case(imm_ext) // extending -> not sure if right
-      `IMM_SIGN_EXT : begin imm_extended = { {`W_CPU-`W_IMM{1'b1}}, imm}; end // extend with 1s
+    //  `IMM_SIGN_EXT : begin imm_extended = { {`W_CPU-`W_IMM{1'b1}}, imm}; end // extend with 1s
+      `IMM_SIGN_EXT : begin imm_extended = { {`W_CPU-`W_IMM{imm[`W_IMM-1]}}, imm}; end
       `IMM_ZERO_EXT : begin imm_extended = { {`W_CPU-`W_IMM{1'b0}}, imm}; end // extend with 0s
       default: begin imm_extended = { {`W_CPU-`W_IMM{1'b0}}, imm}; end // extend with 0s
     endcase
