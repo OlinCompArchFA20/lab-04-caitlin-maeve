@@ -77,7 +77,7 @@ ALU alu_inst(alu_op, rd1, ALUb, result, overflow, isZero);
 // // // ////
 // clk, rst <- from cpu
 reg [`W_EN-1:0] branch_ctrl = `W_EN'b0;        // unused for now, input
-reg [`W_JADDR-1:0] jump_ctrl = `W_JADDR'b0;    // unused for now, input
+reg [`W_JADDR-1:0] jump_addr = `W_JADDR'b0;    // unused for now, input
 reg [`W_IMM-1:0] imm_addr = `W_IMM'b0;         // related to branch
 reg [`W_CPU-1:0] pc_current;     // next_pc, output
 reg [`W_CPU-1:0] reg_addr;
@@ -95,7 +95,7 @@ reg [`W_CPU-1:0] data_in;     // input, unused
 reg [`W_CPU-1:0] data_addr;   // input, output of the ALU
 reg [`W_CPU-1:0] data_out;    // data_out, output
 reg [`W_CPU-1:0] instruction; //instruction, output
-MEMORY mem_inst(clk, rst, pc_current, instruction, mem_cmd, data_in, result, data_out);
+MEMORY stage_MEMORY(clk, rst, pc_current, instruction, mem_cmd, data_in, result, data_out);
 
 // // // ///
 // Other ///
