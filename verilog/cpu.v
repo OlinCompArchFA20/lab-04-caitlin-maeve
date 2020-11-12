@@ -7,11 +7,11 @@
 //    - implementation of sign extend
 // DESIGN NOTES
 // - Want to call decode for an instruction and get the values
+// - Need to use registers for values in mux, otherwise you can't change them (can't use wires)
+// - Wires need to be declared outside, and values will update in time for ALU
 
 // QUESTIONS
-// - Do the registers work for this? (registers vs. wires)
-// - Related, do wires need to be declared outside? Spceifically the ALUb, as
-// it changes which is connected <- could connect a mux
+
 
 `include "fetch.v"
 `include "decode.v"
@@ -47,6 +47,8 @@ reg [`W_MEM_CMD-1:0] mem_cmd; // Memory command
 reg [`W_ALU_SRC-1:0] alu_src; // ALU Source
 reg [`W_REG_SRC-1:0] reg_src; // Mem to Reg
 DECODE #(.DLY(DLY)) slice_inst(inst, wa, ra1, ra2, reg_wen, imm_ext, imm, addr, alu_op, pc_src, mem_cmd, alu_src, reg_src);
+
+// main difference to use registers and wires is that you can modify them in the muxes
 
 // // // ////
 // REGFILE //
