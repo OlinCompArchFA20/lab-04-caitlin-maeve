@@ -27,7 +27,6 @@ module SINGLE_CYCLE_CPU
 // // // ////
 // DECODE  //
 // // // ////
-reg [`W_CPU-1:0] inst;        // instruction input
 reg [`W_CPU-1:0] instruction;        // instruction input
 // Register
 reg [`W_REG-1:0] wa;          // reg write address
@@ -114,7 +113,7 @@ reg [`W_CPU-1:0] imm_extended; // extended imm
 
   always @* begin
   case(alu_src) // assign ALUb
-    `ALU_SRC_SHA : begin ALUb = `W_CPU'(`FLD_SHAMT); end // `W_CPU'(inst[`FLD_SHAMT]); end
+    `ALU_SRC_SHA : begin ALUb = `W_CPU'(instruction[`FLD_SHAMT]); end
     `ALU_SRC_IMM : begin ALUb = imm_extended; end
     `ALU_SRC_REG : begin ALUb = rd2; end
     default: begin ALUb = rd2; end
@@ -133,8 +132,8 @@ reg [`W_CPU-1:0] imm_extended; // extended imm
   //SYSCALL Catch
   always @(posedge clk) begin
     //Is the instruction a SYSCALL?
-    if (inst[`FLD_OPCODE] == `OP_ZERO &&
-        inst[`FLD_FUNCT]  == `F_SYSCAL) begin
+    if (instruction[`FLD_OPCODE] == `OP_ZERO &&
+        instruction[`FLD_FUNCT]  == `F_SYSCAL) begin
         case(rd1)
           1 : $display("SYSCALL  1: a0 = %x",rd2);
           10: begin
