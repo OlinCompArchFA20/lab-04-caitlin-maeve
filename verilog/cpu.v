@@ -83,7 +83,7 @@ reg [`W_MEM_CMD-1:0] mem_cmd; // input, specified by the reg
 reg [`W_CPU-1:0] data_in;     // input, unused
 reg [`W_CPU-1:0] data_addr;   // input, output of the ALU
 reg [`W_CPU-1:0] data_out;    // data_out, output
-MEMORY #(.DLY(DLY)) slice_inst(clk, rst, `PC, mem_cmd, data_in, result, data_out); 
+MEMORY #(.DLY(DLY)) slice_inst(clk, rst, `PC, mem_cmd, data_in, result, data_out);
 
 // // // ///
 // Other ///
@@ -92,7 +92,7 @@ reg [`W_CPU-1:0] imm_extended; // extended imm
 
   always @* begin
    case(reg_src); // assigns wd (Dw)
-      `REG_SRC_PC : wd = `PC;  
+      `REG_SRC_PC : wd = `PC;
       `REG_SRC_ALU : wd = result;
       `REG_SRC_MEM : wd = data_out;
      default: wd = ALUb;
