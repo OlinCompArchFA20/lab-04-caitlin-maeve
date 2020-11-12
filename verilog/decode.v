@@ -82,13 +82,13 @@ module DECODE
     alu_src = `ALU_SRC_IMM;  reg_src = `REG_SRC_ALU;
     pc_src  = `PC_SRC_NEXT;  alu_op  = `F_XOR; end
 
-    `SLTI : begin end
+    `SLTI : begin
     wa = rt; ra1 = rs; ra2 = REG_0; reg_wen = `WREN;
     imm_ext = `IMM_SIGN_EXT; mem_cmd = `MEM_NOP;
     alu_src = `ALU_SRC_IMM;  reg_src = `REG_SRC_ALU;
     pc_src  = `PC_SRC_NEXT;  alu_op  = `F_SLT; end
 
-    `SLTIU : begin end
+    `SLTIU : begin
     wa = rt; ra1 = rs; ra2 = REG_0; reg_wen = `WREN;
     imm_ext = `IMM_SIGN_EXT; mem_cmd = `MEM_NOP;
     alu_src = `ALU_SRC_IMM;  reg_src = `REG_SRC_ALU;
@@ -96,7 +96,6 @@ module DECODE
 
     `OP_ZERO: begin // split them up because of the ALU operation
       case(inst[`FLD_FUNCT]) // keep note of differences in alu_src, alu_op, and reg_wen
-        begin
         `F_BREAK : begin // break is the same as nop!
         wa = rd; ra1 = rs; ra2 = rt; reg_wen = `WDIS;
         imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_NOP;
@@ -198,7 +197,6 @@ module DECODE
         imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_NOP;
         alu_src = `ALU_SRC_REG;  reg_src = `REG_SRC_ALU;
         pc_src  = `PC_SRC_NEXT;  alu_op  = `F_SRA; end
-        end
 
       default: begin // not doing an imm operation, passing data from register through ALU, basically break?
         wa = rd; ra1 = rs; ra2 = rt; reg_wen = `WDIS;
@@ -208,4 +206,6 @@ module DECODE
 
     endcase
   end
+endcase
+end
 endmodule
