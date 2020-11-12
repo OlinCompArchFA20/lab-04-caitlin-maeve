@@ -79,9 +79,9 @@ ALU alu_inst(alu_op, rd1, ALUb, result, overflow, isZero);
 reg [`W_EN-1:0] branch_ctrl = `W_EN'b0;        // unused for now, input
 reg [`W_JADDR-1:0] jump_ctrl = `W_JADDR'b0;    // unused for now, input
 reg [`W_IMM-1:0] imm_addr = `W_IMM'b0;         // related to branch
-reg [`W_CPU-1:0] pc_next;     // next_pc, output
+reg [`W_CPU-1:0] pc_current;     // next_pc, output
 reg [`W_CPU-1:0] reg_addr;
-FETCH fetch_inst(clk, rst, pc_current, branch_ctrl, reg_addr, jump_addr, imm_addr, pc_next);
+FETCH fetch_inst(clk, rst, pc_src, branch_ctrl, reg_addr, jump_addr, imm_addr, pc_current);
 
 // // // ////
 // / MEM / //
@@ -131,7 +131,6 @@ reg [`W_CPU-1:0] imm_extended; // extended imm
   //SYSCALL Catch
   always @(posedge clk) begin
     //Is the instruction a SYSCALL?
-    pc_next = pc_current; // pc_next = `PC
     if (inst[`FLD_OPCODE] == `OP_ZERO &&
         inst[`FLD_FUNCT]  == `F_SYSCAL) begin
         case(rd1)
