@@ -45,7 +45,7 @@ reg [`W_PC_SRC-1:0] pc_src;   // PC source
 reg [`W_MEM_CMD-1:0] mem_cmd; // Memory command
 reg [`W_ALU_SRC-1:0] alu_src; // ALU Source
 reg [`W_REG_SRC-1:0] reg_src; // Mem to Reg
-DECODE #(.DLY(DLY)) slice_inst(inst, wa, ra1, ra2, reg_wen, imm_ext, imm, addr, alu_op, pc_src, mem_cmd, alu_src, reg_src);
+DECODE decode_inst(inst, wa, ra1, ra2, reg_wen, imm_ext, imm, addr, alu_op, pc_src, mem_cmd, alu_src, reg_src);
 
 // main difference to use registers and wires is that you can modify them in the muxes
 
@@ -59,7 +59,7 @@ DECODE #(.DLY(DLY)) slice_inst(inst, wa, ra1, ra2, reg_wen, imm_ext, imm, addr, 
 reg [`W_CPU-1:0] wd;          // mem to reg, input
 reg [`W_CPU-1:0] rd1;         // Da, to ALU, output
 reg [`W_CPU-1:0] rd2;         // Db, to ALUsrc, output
-REGFILE #(.DLY(DLY)) slice_inst(clk, rst, reg_wen, wa, wd, ra1, ra2, rd1, rd2);
+REGFILE reg_inst(clk, rst, reg_wen, wa, wd, ra1, ra2, rd1, rd2);
 
 // // // ////
 // / ALU / //
@@ -70,18 +70,18 @@ reg [`W_CPU-1:0] ALUb;        // second ALU input
 reg [`W_CPU-1:0] result;      // result, output
 reg overflow;                 // overflow, output <- unused
 reg isZero;                   // is zero, output <- unused
-ALU #(.DLY(DLY)) slice_inst(alu_op, rd1, ALUb, result, overflow, isZero);
+ALU alu_inst(alu_op, rd1, ALUb, result, overflow, isZero);
 
 // // // ////
 //  FETCH  //
 // // // ////
 // clk, rst <- from cpu
-reg [`W_EN-1:0] branch_ctrl = [`W_EN-1:0]'b0;        // unused for now, input
-reg [`W_JADDR-1:0] jump_ctrl = [`W_JADDR-1:0]'b0;    // unused for now, input
-reg [`W_IMM-1:0] imm_addr = [`W_IMM-1:0]'b0;         // related to branch?, input
-reg [`W_CPU-1:0] imm_addr = [`W_CPU-1:0]'b0          // related to branch?, input
+reg [`W_EN-1:0] branch_ctrl = `W_EN'b0;        // unused for now, input
+reg [`W_JADDR-1:0] jump_ctrl = `W_JADDR'b0;    // unused for now, input
+reg [`W_IMM-1:0] imm_addr = `W_IMM'b0;         // related to branch
 reg [`W_CPU-1:0] pc_next;     // next_pc, output
-FETCH #(.DLY(DLY)) slice_inst(clk, rst, `PC, branch_ctrl, , jump_addr, imm_addr, pc_next);
+reg [`W_CPU-1:0] reg_addr;
+FETCH fetch_inst(clk, rst, pc_current, branch_ctrl, reg_addr, jump_addr, imm_addr, pc_next);
 
 // // // ////
 // / MEM / //
@@ -90,11 +90,12 @@ FETCH #(.DLY(DLY)) slice_inst(clk, rst, `PC, branch_ctrl, , jump_addr, imm_addr,
 // `PC <- PC register, input
 // result <- from ALU, input
 // instruction <- output
-reg [`W_MEM_CMD-1:0] mem_cmd; // input, specified by the reg
+// we define mem_cmd, an input at the top for the decode
 reg [`W_CPU-1:0] data_in;     // input, unused
 reg [`W_CPU-1:0] data_addr;   // input, output of the ALU
 reg [`W_CPU-1:0] data_out;    // data_out, output
-MEMORY #(.DLY(DLY)) slice_inst(clk, rst, `PC, mem_cmd, data_in, result, data_out);
+reg [`W_CPU-1:0] instruction; //instruction, output
+MEMORY mem_inst(clk, rst, pc_current, instruction, mem_cmd, data_in, result, data_out);
 
 // // // ///
 // Other ///
@@ -102,35 +103,35 @@ MEMORY #(.DLY(DLY)) slice_inst(clk, rst, `PC, mem_cmd, data_in, result, data_out
 reg [`W_CPU-1:0] imm_extended; // extended imm
 
   always @* begin
-   case(reg_src); // assigns wd (Dw)
-      `REG_SRC_PC : wd = `PC;
-      `REG_SRC_ALU : wd = result;
-      `REG_SRC_MEM : wd = data_out;
-     default: wd = ALUb;
+   case(reg_src) // assigns wd (Dw)
+      `REG_SRC_PC : begin wd = pc_current; end // wd = `PC
+      `REG_SRC_ALU : begin wd = result; end
+      `REG_SRC_MEM : begin wd = data_out; end
+     default: begin wd = ALUb; end
    endcase
   end
 
   always @* begin
-  case(alu_src); // assign ALUb
-    `ALU_SRC_SHA : ALUb = `W_CPU'(inst[`FLD_SHAMT]);
-    `ALU_SRC_IMM : ALUb = imm_extended;
-    `ALU_SRC_REG : ALUb = rd2;
-    default: ALUb = rd2;
+  case(alu_src) // assign ALUb
+    `ALU_SRC_SHA : begin ALUb = `W_CPU'(inst[`FLD_SHAMT]); end
+    `ALU_SRC_IMM : begin ALUb = imm_extended; end
+    `ALU_SRC_REG : begin ALUb = rd2; end
+    default: begin ALUb = rd2; end
   endcase
   end
 
-  always @* begin
-    case(imm_ext); // extending -> not sure if right
-      `IMM_SIGN_EXT : imm_extended = { {(`W_CPU-`W_IMM)`b1}, imm}; // extend with 1s
-      `IMM_ZERO_EXT : imm_extended = { {(`W_CPU-`W_IMM)`b0}, imm}; // extend with 0s
-      default: imm_extended = { {(`W_CPU-`W_IMM)`b0}}, imm}; // extend with 0s
+  always @* begin // w_cpu - w_imm gets you some really weird results on duckduckgo
+    case(imm_ext) // extending -> not sure if right
+      `IMM_SIGN_EXT : begin imm_extended = { {`W_CPU-`W_IMM{1'b1}}, imm}; end // extend with 1s
+      `IMM_ZERO_EXT : begin imm_extended = { {`W_CPU-`W_IMM{1'b0}}, imm}; end // extend with 0s
+      default: begin imm_extended = { {`W_CPU-`W_IMM{1'b0}}, imm}; end // extend with 0s
     endcase
   end
 
   //SYSCALL Catch
   always @(posedge clk) begin
     //Is the instruction a SYSCALL?
-    pc_next = `PC;
+    pc_next = pc_current; // pc_next = `PC
     if (inst[`FLD_OPCODE] == `OP_ZERO &&
         inst[`FLD_FUNCT]  == `F_SYSCAL) begin
         case(rd1)
@@ -139,7 +140,7 @@ reg [`W_CPU-1:0] imm_extended; // extended imm
               $display("SYSCALL 10: Exiting...");
               $finish;
             end
-          default: //TODO add?;
+          //default: //TODO add?;
         endcase
     end
   end

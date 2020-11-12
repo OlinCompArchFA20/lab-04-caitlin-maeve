@@ -47,49 +47,49 @@ module DECODE
     // add, addi, addiu, addu, and, andi, nor, or, ori, slt, slti, sltiu, sltu, sll, srl, sub, subu, nop
      // alu_op = alu_cntrl
     // `LUI : begin ADI said we don't need to implement li, and it's not the same as lui
-    // wa = rt; ra1 = REG_0; ra2 = REG_0; reg_wen = `WREN;
+    // wa = rt; ra1 = `REG_0; ra2 = `REG_0; reg_wen = `WREN;
     // imm_ext = `IMM_SIGN_EXT; mem_cmd = `MEM_NOP;
     // alu_src = `ALU_SRC_IMM;  reg_src = `REG_SRC_ALU;
     // pc_src  = `PC_SRC_NEXT;  alu_op  = `F_OR; end //
 
     `ADDI : begin
-    wa = rt; ra1 = rs; ra2 = REG_0; reg_wen = `WREN;
+    wa = rt; ra1 = rs; ra2 = `REG_0; reg_wen = `WREN;
     imm_ext = `IMM_SIGN_EXT; mem_cmd = `MEM_NOP;
     alu_src = `ALU_SRC_IMM;  reg_src = `REG_SRC_ALU;
     pc_src  = `PC_SRC_NEXT;  alu_op  = `F_ADD; end
 
     `ADDIU : begin
-    wa = rt; ra1 = rs; ra2 = REG_0; reg_wen = `WREN;
+    wa = rt; ra1 = rs; ra2 = `REG_0; reg_wen = `WREN;
     imm_ext = `IMM_SIGN_EXT; mem_cmd = `MEM_NOP;
     alu_src = `ALU_SRC_IMM;  reg_src = `REG_SRC_ALU;
     pc_src  = `PC_SRC_NEXT;  alu_op  = `F_ADDU; end
 
     `ANDI : begin
-    wa = rt; ra1 = rs; ra2 = REG_0; reg_wen = `WREN;
+    wa = rt; ra1 = rs; ra2 = `REG_0; reg_wen = `WREN;
     imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_NOP;
     alu_src = `ALU_SRC_IMM;  reg_src = `REG_SRC_ALU;
     pc_src  = `PC_SRC_NEXT;  alu_op  = `F_AND; end
 
     `ORI : begin
-    wa = rt; ra1 = rs; ra2 = REG_0; reg_wen = `WREN;
+    wa = rt; ra1 = rs; ra2 = `REG_0; reg_wen = `WREN;
     imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_NOP;
     alu_src = `ALU_SRC_IMM;  reg_src = `REG_SRC_ALU;
     pc_src  = `PC_SRC_NEXT;  alu_op  = `F_OR; end
 
     `XORI : begin
-    wa = rt; ra1 = rs; ra2 = REG_0; reg_wen = `WREN;
+    wa = rt; ra1 = rs; ra2 = `REG_0; reg_wen = `WREN;
     imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_NOP;
     alu_src = `ALU_SRC_IMM;  reg_src = `REG_SRC_ALU;
     pc_src  = `PC_SRC_NEXT;  alu_op  = `F_XOR; end
 
     `SLTI : begin
-    wa = rt; ra1 = rs; ra2 = REG_0; reg_wen = `WREN;
+    wa = rt; ra1 = rs; ra2 = `REG_0; reg_wen = `WREN;
     imm_ext = `IMM_SIGN_EXT; mem_cmd = `MEM_NOP;
     alu_src = `ALU_SRC_IMM;  reg_src = `REG_SRC_ALU;
     pc_src  = `PC_SRC_NEXT;  alu_op  = `F_SLT; end
 
     `SLTIU : begin
-    wa = rt; ra1 = rs; ra2 = REG_0; reg_wen = `WREN;
+    wa = rt; ra1 = rs; ra2 = `REG_0; reg_wen = `WREN;
     imm_ext = `IMM_SIGN_EXT; mem_cmd = `MEM_NOP;
     alu_src = `ALU_SRC_IMM;  reg_src = `REG_SRC_ALU;
     pc_src  = `PC_SRC_NEXT;  alu_op  = `F_SLTU; end
@@ -163,37 +163,37 @@ module DECODE
         pc_src  = `PC_SRC_NEXT;  alu_op  = `F_SLTU; end
 
         `F_SLL : begin
-        wa = rd; ra1 = rt; ra2 = REG_0; reg_wen = `WREN;
+        wa = rd; ra1 = rt; ra2 = `REG_0; reg_wen = `WREN;
         imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_NOP;
         alu_src = `ALU_SRC_SHA;  reg_src = `REG_SRC_ALU;
         pc_src  = `PC_SRC_NEXT;  alu_op  = `F_SLL; end
 
         `F_SLLV : begin // uses specified register instead of shamt
-        wa = rd; ra1 = rt; ra2 = REG_0; reg_wen = `WREN;
+        wa = rd; ra1 = rt; ra2 = `REG_0; reg_wen = `WREN;
         imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_NOP;
         alu_src = `ALU_SRC_REG;  reg_src = `REG_SRC_ALU;
         pc_src  = `PC_SRC_NEXT;  alu_op  = `F_SLL; end
 
         `F_SRL : begin
-        wa = rd; ra1 = rt; ra2 = REG_0; reg_wen = `WREN;
+        wa = rd; ra1 = rt; ra2 = `REG_0; reg_wen = `WREN;
         imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_NOP;
         alu_src = `ALU_SRC_SHA;  reg_src = `REG_SRC_ALU;
         pc_src  = `PC_SRC_NEXT;  alu_op  = `F_SRL; end
 
         `F_SRLV : begin
-        wa = rd; ra1 = rt; ra2 = REG_0; reg_wen = `WREN;
+        wa = rd; ra1 = rt; ra2 = `REG_0; reg_wen = `WREN;
         imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_NOP;
         alu_src = `ALU_SRC_REG;  reg_src = `REG_SRC_ALU;
         pc_src  = `PC_SRC_NEXT;  alu_op  = `F_SRL; end
 
         `F_SRA  : begin
-        wa = rd; ra1 = rt; ra2 = REG_0; reg_wen = `WREN;
+        wa = rd; ra1 = rt; ra2 = `REG_0; reg_wen = `WREN;
         imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_NOP;
         alu_src = `ALU_SRC_SHA;  reg_src = `REG_SRC_ALU;
         pc_src  = `PC_SRC_NEXT;  alu_op  = `F_SRA; end
 
         `F_SRAV : begin
-        wa = rd; ra1 = rt; ra2 = REG_0; reg_wen = `WREN;
+        wa = rd; ra1 = rt; ra2 = `REG_0; reg_wen = `WREN;
         imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_NOP;
         alu_src = `ALU_SRC_REG;  reg_src = `REG_SRC_ALU;
         pc_src  = `PC_SRC_NEXT;  alu_op  = `F_SRA; end
