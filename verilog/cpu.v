@@ -104,9 +104,11 @@ reg [`PC_UPPER-1:0] PC;
 
   always @* begin
     case(imm_ext); // extending -> not sure if right
-      `IMM_SIGN_EXT : imm_extended = { {(`W_CPU-`W_IMM)`b1}}, imm}; // extend with 1s
-      `IMM_ZERO_EXT : imm_extended = { {(`W_CPU-`W_IMM)`b0}}, imm}; // extend with 0s
-      default: imm_extended = { {(`W_CPU-`W_IMM)`b0}}, imm}; // extend with 0s
+      //`IMM_SIGN_EXT : imm_extended = { (`W_CPU-`W_IMM)`b1, imm}; // extend with 1s
+      `IMM_SIGN_EXT : imm_extended = {`b1*(`W_CPU-`W_IMM), imm}; // extend with 1s
+      //`IMM_ZERO_EXT : imm_extended = { (`W_CPU-`W_IMM)`b0, imm}; // extend with 0s
+      `IMM_ZERO_EXT : imm_extended = { `b0*(`W_CPU-`W_IMM), imm}; // extend with 0s
+      default: imm_extended = { (`W_CPU-`W_IMM)`b0, imm}; // extend with 0s
     endcase
   end
 
