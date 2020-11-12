@@ -12,66 +12,67 @@ module ALU
 
   always @* begin
     case(alu_op)
-      default :
-        R = {W_CPU-1(1'b0)};
-        overflow = 1'b0;
       // math
-      `ADD: begin
+      `ADD : begin
         {overflow, R} = A + B;
       end
-      `ADDU: begin
+      `ADDU : begin
         {overflow, R} = A + B;
       end
-      `SUB: begin
+      `SUB : begin
         {overflow, R} = A + ~B;
       end
-      `SUBU: begin
+      `SUBU : begin
         {overflow, R} = A + ~B;
       end
-      `SLT: begin
-        R = {W_CPU-1(1'b0)};
-        if (!(A < B)
-          R[0] = 1;
+      `SLT : begin
+        R = `W_CPU'b0;
+        if (A >= B)
+        R = `W_CPU'b1;
         overflow = 1'b0;
       end
-      `SLTU: begin
-        R = {W_CPU-1(1'b0)};
-        if (!(A < B)
-          R[0] = 1;
+      `SLTU : begin
+        R = `W_CPU'b0;
+        if (A >= B)
+        R = `W_CPU'b1;
         overflow = 1'b0;
       end
       // shifts
-      `SLL: begin
+      `SLL : begin
         R = A << B; // TODO make sure this is correct
         overflow = 1'b0;
       end
-      `SRL: begin
+      `SRL : begin
         R = A >> B;
         overflow = 1'b0;
       end
-      `SRA: begin
+      `SRA : begin
         R = A >>> B;
         overflow = 1'b0;
       end
       // gates
-      `AND: begin
+      `AND : begin
         R = A & B;
         overflow = 1'b0;
       end
-      `NAND: begin
-        R = ~(A & B);
-        overflow = 1'b0;
-      end
-      `OR: begin
+      // `NAND : begin
+      //   R = ~(A & B);
+      //   overflow = 1'b0;
+      // end // note: not included in lab4b list or opcodes.v
+      `OR : begin
         R = A | B;
         overflow = 1'b0;
       end
-      `NOR: begin
+      `NOR : begin
         R = ~(A | B);
         overflow = 1'b0;
       end
-      `XOR: begin
+      `XOR : begin
         R = A ^ B;
+        overflow = 1'b0;
+      end
+      default : begin
+        R =  `W_CPU-1'b0; // TODO check this is the right syntax
         overflow = 1'b0;
       end
     endcase
