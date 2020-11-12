@@ -1,5 +1,4 @@
-// TO DO
-// - Add memory
+// TO DO - Add memory
 // - Finish case implementation
 // - Wire
 // - Check types of vars, should they all be reg?
@@ -55,6 +54,8 @@ DECODE #(.DLY(DLY)) slice_inst(inst, wa, ra1, ra2, reg_wen, imm_ext, imm, addr, 
 // // // ////
 // clk, rst <- from cpu
 // reg_wen, wa, ra1, ra2 <- from decode
+// wa is the address (Aw)
+// wd is the data (Dw)
 reg [`W_CPU-1:0] wd;          // mem to reg, input
 reg [`W_CPU-1:0] rd1;         // Da, to ALU, output
 reg [`W_CPU-1:0] rd2;         // Db, to ALUsrc, output
@@ -71,31 +72,36 @@ reg overflow;                 // overflow, output <- unused
 reg isZero;                   // is zero, output <- unused
 ALU #(.DLY(DLY)) slice_inst(alu_op, rd1, ALUb, result, overflow, isZero);
 
+// // // ////
+// / MEM / //
+// // // ////
+// clk, rst <- from cpu, input
+// `PC <- PC register, input
+// result <- from ALU, input
+// instruction <- output
+reg [`W_MEM_CMD-1:0] mem_cmd; // input, specified by the reg
+reg [`W_CPU-1:0] data_in;     // input, unused
+reg [`W_CPU-1:0] data_addr;   // input, output of the ALU
+reg [`W_CPU-1:0] data_out;    // data_out, output
+MEMORY #(.DLY(DLY)) slice_inst(clk, rst, `PC, mem_cmd, data_in, result, data_out); 
+
 // // // ///
 // Other ///
 // // // ///
-reg [`W_CPU-1:0] imm_extended;// extended imm
-reg [`PC_UPPER-1:0] PC;
+reg [`W_CPU-1:0] imm_extended; // extended imm
 
   always @* begin
-   case(reg_src); // assigns register inputs
-   // TODO, what is regsrc?
-      // PC -> pc line
-      // ALU -> register destination
-      // MEM -> from memory to register
-      //
-      // Assign Aw, Dw
-      `REG_SRC_PC :; // TODO i don't know what to put down for any of these :( can probably ignore pc for now though
-
-      `REG_SRC_ALU :; // register_to_store_into = alu_output or something ? what are the names
-      `REG_SRC_MEM :; // register_to_store_into = memory_we_just_read
-     default:;
+   case(reg_src); // assigns wd (Dw)
+      `REG_SRC_PC : wd = `PC;  
+      `REG_SRC_ALU : wd = result;
+      `REG_SRC_MEM : wd = data_out;
+     default: wd = ALUb;
    endcase
   end
 
   always @* begin
   case(alu_src); // assign ALUb
-    `ALU_SRC_SHA : ALUb = `W_CPU'(inst[`FLD_SHAMT]); // TODO fix so that this is an input of alu
+    `ALU_SRC_SHA : ALUb = `W_CPU'(inst[`FLD_SHAMT]);
     `ALU_SRC_IMM : ALUb = imm_extended;
     `ALU_SRC_REG : ALUb = rd2;
     default: ALUb = rd2;
@@ -104,12 +110,11 @@ reg [`PC_UPPER-1:0] PC;
 
   always @* begin
     case(imm_ext); // extending -> not sure if right
-      `IMM_SIGN_EXT : imm_extended = { {(`W_CPU-`W_IMM)`b1}}, imm}; // extend with 1s
-      `IMM_ZERO_EXT : imm_extended = { {(`W_CPU-`W_IMM)`b0}}, imm}; // extend with 0s
+      `IMM_SIGN_EXT : imm_extended = { {(`W_CPU-`W_IMM)`b1}, imm}; // extend with 1s
+      `IMM_ZERO_EXT : imm_extended = { {(`W_CPU-`W_IMM)`b0}, imm}; // extend with 0s
       default: imm_extended = { {(`W_CPU-`W_IMM)`b0}}, imm}; // extend with 0s
     endcase
   end
-
 
 //  TODO: eventually add branching case
 
