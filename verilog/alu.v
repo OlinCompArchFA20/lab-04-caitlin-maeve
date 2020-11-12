@@ -39,11 +39,11 @@ module ALU
       end
       // shifts
       `F_SLL : begin
-        R = A << B; // TODO make sure this is correct
+        R = A >> B; // TODO make sure this is correct
         overflow = 1'b0;
       end
       `F_SRL : begin
-        R = A >> B;
+        R = A << B;
         overflow = 1'b0;
       end
       `F_SRA : begin

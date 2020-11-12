@@ -114,7 +114,7 @@ reg [`W_CPU-1:0] imm_extended; // extended imm
 
   always @* begin
   case(alu_src) // assign ALUb
-    `ALU_SRC_SHA : begin ALUb = `W_CPU'(inst[`FLD_SHAMT]); end
+    `ALU_SRC_SHA : begin ALUb = { {`W_CPU-`W_SHAMT{1'b0}}, inst[`FLD_SHAMT]}; end
     `ALU_SRC_IMM : begin ALUb = imm_extended; end
     `ALU_SRC_REG : begin ALUb = rd2; end
     default: begin ALUb = rd2; end
