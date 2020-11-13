@@ -97,10 +97,16 @@ module DECODE
     `OP_ZERO: begin // split them up because of the ALU operation
       case(inst[`FLD_FUNCT]) // keep note of differences in alu_src, alu_op, and reg_wen
         `F_BREAK : begin // break is the same as nop!
-        wa = rd; ra1 = rs; ra2 = rt; reg_wen = `WDIS;
+        wa = `REG_0; ra1 = `REG_0; ra2 = `REG_0; reg_wen = `WDIS;
         imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_NOP;
         alu_src = `ALU_SRC_REG;  reg_src = `REG_SRC_ALU;
         pc_src  = `PC_SRC_NEXT;  alu_op  = `F_BREAK; end// inst[`FLD_FUNCT]; end
+
+        `F_SYSCAL : begin
+        wa = rd; ra1 = `REG_V0; ra2 = `REG_A0; reg_wen = `WDIS;
+        imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_NOP;
+        alu_src = `ALU_SRC_REG;  reg_src = `REG_SRC_ALU;
+        pc_src  = `PC_SRC_NEXT;  alu_op  = `F_SYSCAL; end
 
         `F_ADD : begin
         wa = rd; ra1 = rs; ra2 = rt; reg_wen = `WREN;

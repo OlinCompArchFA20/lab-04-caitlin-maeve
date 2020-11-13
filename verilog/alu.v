@@ -39,7 +39,7 @@ module ALU
       end
       // shifts
       `F_SLL : begin
-        R = A << B; 
+        R = A << B;
         overflow = 1'b0;
       end
       `F_SRL : begin
@@ -69,6 +69,10 @@ module ALU
       end
       `F_XOR : begin
         R = A ^ B;
+        overflow = 1'b0;
+      end
+      `F_SYSCAL : begin
+        R = B; // B should be the the result of a
         overflow = 1'b0;
       end
       default : begin
