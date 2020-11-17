@@ -52,6 +52,66 @@ module DECODE
     // alu_src = `ALU_SRC_IMM;  reg_src = `REG_SRC_ALU;
     // pc_src  = `PC_SRC_NEXT;  alu_op  = `F_OR; end //
 
+    //J instruction
+
+    `J_: begin
+    wa = rd; ra1 = rs; ra2 = rt; reg_wen = `WDIS;
+    imm_ext = `IMM_SIGN_EXT; mem_cmd = `MEM_NOP;
+    alu_src = `ALU_SRC_REG; reg_src = `REG_SRC_ALU;
+    pc_src = `PC_SRC_JUMP; alu_op = inst[`FLD_FUNCT]; end
+
+    `JAL : begin
+    wa = 31; ra1 = rs; ra2 = `REG_0; reg_wen = `WREN; // TODO R[31]=PC+8, not sure how to add PC here!
+    imm_ext = `IMM_SIGN_EXT; mem_cmd = `MEM_NOP;
+    alu_src = `ALU_SRC_IMM; reg_src = `REG_SRC_ALU;
+    pc_src = `PC_SRC_JUMP; alu_op = `F_ADDU; end
+    // TODO what is jal?
+
+    `JALR : begin
+    wa = 31; ra1 = rs; ra2 = `REG_0; reg_wen = `WREN; // TODO R[31]=PC+8, not sure how to add PC here!
+    imm_ext = `IMM_SIGN_EXT; mem_cmd = `MEM_NOP;
+    alu_src = `ALU_SRC_IMM; reg_src = `REG_SRC_ALU;
+    pc_src = `PC_SRC_JUMP; alu_op = `F_ADDU; end
+    // TODO what does jalr do? https://chortle.ccsu.edu/AssemblyTutorial/Chapter-36/ass36_5.html
+    // seems like jal instead of using jump_addr, using reg_addr
+
+    `JR : begin
+    wa = rt; ra1 = rs; ra2 = `REG_0; reg_wen = `WDIS;
+    imm_ext = `IMM_SIGN_EXT; mem_cmd = `MEM_NOP;
+    alu_src = `ALU_SRC_REG; reg_src = `REG_SRC_ALU;
+    pc_src = `PC_SRC_JUMP; alu_op = inst[`FLD_FUNCT]; end
+    // TODO how to make sure rs = reg address and rt = PC? Basically same as J except we will use reg_addr instead of jump_addr
+
+    // Branch insructions
+    `BEQ : begin
+    wa = rd; ra1 = rs; ra2 = rt; reg_wen = `WDIS; // TODO is it `WREN or `WDIS? WDIS right?
+    imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_NOP;
+    alu_src = `ALU_SRC_REG; reg_src = `REG_SRC_ALU;
+    pc_src = `PC_SRC_BRCH; alu_op = `F_SUBU; end
+    // TODO can we write to rd?
+
+    `BNE : begin
+    wa = rd; ra1 = rs; ra2 = rt; reg_wen = `WDIS;
+    imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_NOP;
+    alu_src = `ALU_SRC_REG; reg_src = `REG_SRC_ALU;
+    pc_src = `PC_SRC_BRCH; alu_op = `F_SUBU; end
+
+    // Load and store instructions
+
+    `LW : begin
+    wa = rt; ra1 = rs; ra2 = `REG_0; reg_wen = `WREN;
+    imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_READ;
+    alu_src = `ALU_SRC_IMM; reg_src = `REG_SRC_MEM;
+    pc_src = `PC_SRC_NEXT; alu_op = `F_ADDU; end
+
+    `SW : begin
+    wa = rt; ra1 = rs; ra2 = `REG_0; reg_wen = `WDIS;
+    imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_WRITE;
+    alu_src = `ALU_SRC_IMM; reg_src = `REG_SRC_MEM;
+    pc_src = `PC_SRC_NEXT; alu_op = `F_ADDU; end
+
+    // ALU instructions
+
     `ADDI : begin
     wa = rt; ra1 = rs; ra2 = `REG_0; reg_wen = `WREN;
     imm_ext = `IMM_SIGN_EXT; mem_cmd = `MEM_NOP;

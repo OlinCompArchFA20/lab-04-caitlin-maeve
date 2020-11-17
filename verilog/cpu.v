@@ -120,9 +120,8 @@ reg [`W_CPU-1:0] imm_extended; // extended imm
   endcase
   end
 
-  always @* begin // w_cpu - w_imm gets you some really weird results on duckduckgo
-    case(imm_ext) // extending -> not sure if right
-    //  `IMM_SIGN_EXT : begin imm_extended = { {`W_CPU-`W_IMM{1'b1}}, imm}; end // extend with 1s
+  always @* begin
+    case(imm_ext)
       `IMM_SIGN_EXT : begin imm_extended = { {`W_CPU-`W_IMM{imm[`W_IMM-1]}}, imm}; end
       `IMM_ZERO_EXT : begin imm_extended = { {`W_CPU-`W_IMM{1'b0}}, imm}; end // extend with 0s
       default: begin imm_extended = { {`W_CPU-`W_IMM{1'b0}}, imm}; end // extend with 0s
@@ -131,7 +130,6 @@ reg [`W_CPU-1:0] imm_extended; // extended imm
 
   //SYSCALL Catch
   always @(posedge clk) begin
-    //Is the instruction a SYSCALL?
     if (instruction[`FLD_OPCODE] == `OP_ZERO &&
         instruction[`FLD_FUNCT]  == `F_SYSCAL) begin
         case(rd1)
@@ -140,7 +138,6 @@ reg [`W_CPU-1:0] imm_extended; // extended imm
               $display("SYSCALL 10: Exiting...");
               $finish;
             end
-          //default: //TODO add?;
         endcase
     end
   end

@@ -19,12 +19,20 @@ module FETCH
     end
     else begin
       case(pc_src)
-      `PC_SRC_NEXT : begin pc_next = pc_next + 4; end
-    //  `PC_SRC_BRCH : begin end
-    //  `PC_SRC_JUMP : begin end
-    //  `PC_SRC_REGF : begin end
-        // Make sure you're very careful here!!
-        // TODO case for branching, jumping goes here in Lab4C
+      //`PC_SRC_NEXT : begin pc_next = pc_next + 4; end
+      `PC_SRC_BRCH : begin
+      if (branch_ctrl == 1'b1) begin
+      pc_next = pc_next + 4 + 14'b0; //{14'b{imm_addr[`W_CPU-`W_IMM_EXT], imm_addr, 2'b0}; // TODO fix syntax
+      end else begin
+      pc_next = pc_next + 4;
+      end
+      end
+      `PC_SRC_JUMP : begin
+      pc_next = {pc_next[`PC_UPPER], jump_addr, `W_WORD'b0};
+      end
+      `PC_SRC_REGF : begin
+      pc_next = reg_addr;
+      end
         default     :  begin
         pc_next <= pc_next + 4; end
       endcase
