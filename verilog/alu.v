@@ -9,7 +9,7 @@ module ALU
   output reg overflow,
   output reg isZero);
 
-
+  assign isZero = (R == 0); 
   always @* begin
     case(alu_op)
       // math
