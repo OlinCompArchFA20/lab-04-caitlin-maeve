@@ -77,11 +77,12 @@ ALU alu_inst(alu_op, rd1, ALUb, result, overflow, isZero);
 // // // ////
 // clk, rst <- from cpu
 reg [`W_EN-1:0] branch_ctrl = `W_EN'b0;        // unused for now, input
-reg [`W_JADDR-1:0] jump_addr = `W_JADDR'b0;    // unused for now, input
+//reg [`W_JADDR-1:0] jump_addr = `W_JADDR'b0;    // unused for now, input
 reg [`W_IMM-1:0] imm_addr = `W_IMM'b0;         // related to branch
 reg [`W_CPU-1:0] pc_current;     // next_pc, output
 reg [`W_CPU-1:0] reg_addr;
-FETCH fetch_inst(clk, rst, pc_src, branch_ctrl, reg_addr, jump_addr, imm_addr, pc_current);
+FETCH fetch_inst(clk, rst, pc_src, branch_ctrl, reg_addr, addr, imm_addr, pc_current);
+// used to be jump_addr
 
 // // // ////
 // / MEM / //

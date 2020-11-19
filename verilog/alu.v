@@ -76,7 +76,7 @@ module ALU
         overflow = 1'b0;
       end
       default : begin
-        R =  `W_CPU-1'b0; // TODO check this is the right syntax
+        R =  31'b0; // TODO check this is the right syntax
         overflow = 1'b0;
       end
     endcase
