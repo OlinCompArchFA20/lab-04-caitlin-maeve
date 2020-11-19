@@ -22,7 +22,7 @@ module FETCH
       //`PC_SRC_NEXT : begin pc_next = pc_next + 4; end
       `PC_SRC_BRCH : begin
       if (branch_ctrl == 1'b1) begin
-      pc_next = pc_next + 4 + 14'b0; //{14'b{imm_addr[`W_CPU-`W_IMM_EXT], imm_addr, 2'b0}; // TODO fix syntax
+      pc_next = pc_next + 4 + (`W_CPU(imm_addr)<<2); //{14'b{imm_addr[`W_CPU-`W_IMM_EXT], imm_addr, 2'b0}; // TODO fix syntax
       end else begin
       pc_next = pc_next + 4;
       end
