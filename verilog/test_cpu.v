@@ -69,6 +69,6 @@ module cpu_test ();
     #2000
     /* verilator lint_on STMTDLY */
     $display("Are you sure you should be running this long?");
-    $finish();
+    //$finish();
     end
 endmodule
