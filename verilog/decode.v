@@ -76,12 +76,6 @@ module DECODE
     // // TODO what does jalr do? https://chortle.ccsu.edu/AssemblyTutorial/Chapter-36/ass36_5.html
     // // seems like jal instead of using jump_addr, using reg_addr
 
-    `JR : begin
-    wa = rt; ra1 = rs; ra2 = `REG_0; reg_wen = `WDIS;
-    imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_NOP;
-    alu_src = `ALU_SRC_REG; reg_src = `REG_SRC_ALU;
-    pc_src = `PC_SRC_JUMP; alu_op = inst[`FLD_FUNCT]; end
-    // TODO how to make sure rs = reg address and rt = PC? Basically same as J except we will use reg_addr instead of jump_addr
 
     // Branch insructions
     `BEQ : begin
@@ -162,6 +156,13 @@ module DECODE
         imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_NOP;
         alu_src = `ALU_SRC_REG;  reg_src = `REG_SRC_ALU;
         pc_src  = `PC_SRC_NEXT;  alu_op  = `F_BREAK; end// inst[`FLD_FUNCT]; end
+
+        // `JR : begin
+        // wa = rt; ra1 = rs; ra2 = `REG_0; reg_wen = `WDIS;
+        // imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_NOP;
+        // alu_src = `ALU_SRC_REG; reg_src = `REG_SRC_ALU;
+        // pc_src = `PC_SRC_JUMP; alu_op = inst[`FLD_FUNCT]; end
+        // TODO how to make sure rs = reg address and rt = PC? Basically same as J except we will use reg_addr instead of jump_addr
 
         `F_SYSCAL : begin
         wa = rd; ra1 = `REG_V0; ra2 = `REG_A0; reg_wen = `WDIS;
