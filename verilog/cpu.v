@@ -56,7 +56,7 @@ DECODE decode_inst(instruction, wa, ra1, ra2, reg_wen, imm_ext, imm, addr, alu_o
 // reg_wen, wa, ra1, ra2 <- from decode
 // wa is the address (Aw)
 // wd is the data (Dw)
-reg [`W_CPU-1:0] wd;          // mem to reg, input
+reg [`W_CPU-1:0] wd;          // data to write, input
 reg [`W_CPU-1:0] rd1;         // Da, to ALU, output
 reg [`W_CPU-1:0] rd2;         // Db, to ALUsrc, output
 REGFILE reg_inst(clk, rst, reg_wen, wa, wd, ra1, ra2, rd1, rd2);

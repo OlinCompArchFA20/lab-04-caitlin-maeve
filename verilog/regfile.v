@@ -8,8 +8,8 @@ module REGFILE
  (input                   clk,
   input                   rst,
   input                   wren, // write enable
-  input      [`W_REG-1:0] wa, // value to write to (Aw)
-  input      [`W_CPU-1:0] wd, // mem to reg
+  input      [`W_REG-1:0] wa, // write address
+  input      [`W_CPU-1:0] wd, // value to write
   input      [`W_REG-1:0] ra1, // read one (Aa) 
   input      [`W_REG-1:0] ra2, // read two (Ab)
   output reg [`W_CPU-1:0] rd1, // Da
