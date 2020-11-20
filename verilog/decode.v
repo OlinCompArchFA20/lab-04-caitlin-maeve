@@ -100,7 +100,7 @@ module DECODE
     pc_src = `PC_SRC_NEXT; alu_op = `F_ADDU; end
 
     `SW : begin
-    wa = rt; ra1 = rs; ra2 = `REG_0; reg_wen = `WDIS;
+    wa = rt; ra1 = rs; ra2 = `REG_0; reg_wen = `WDEN;
     imm_ext = `IMM_SIGN_EXT; mem_cmd = `MEM_WRITE; // `IMM_ZERO_EXT
     alu_src = `ALU_SRC_IMM; reg_src = `REG_SRC_MEM;
     pc_src = `PC_SRC_NEXT; alu_op = `F_ADDU; end
