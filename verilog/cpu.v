@@ -80,8 +80,8 @@ reg [`W_EN-1:0] branch_ctrl;        // unused for now, input
 //reg [`W_JADDR-1:0] jump_addr = `W_JADDR'b0;    // unused for now, input
 //reg [`W_IMM-1:0] imm;     // related to branch
 reg [`W_CPU-1:0] pc_current;     // next_pc, output
-reg [`W_CPU-1:0] reg_addr;
-FETCH fetch_inst(clk, rst, pc_src, branch_ctrl, reg_addr, addr, imm, pc_current);
+//reg [`W_CPU-1:0] reg_addr;
+FETCH fetch_inst(clk, rst, pc_src, branch_ctrl, ra1, addr, imm, pc_current); // ra1 = reg_addr
 // used to be jump_addr
 
 // // // ////

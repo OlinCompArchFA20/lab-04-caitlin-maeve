@@ -68,14 +68,6 @@ module DECODE
     // Jump and link -> jumps somewhere and puts a link to where it was in the last register.
     // Later you can say 'jr' that jumps back to that location (jump register)
 
-    // `JALR : begin
-    // wa = 31; ra1 = rs; ra2 = `REG_0; reg_wen = `WREN; // TODO R[31]=PC+8, not sure how to add PC here!
-    // imm_ext = `IMM_SIGN_EXT; mem_cmd = `MEM_NOP;
-    // alu_src = `ALU_SRC_IMM; reg_src = `REG_SRC_ALU;
-    // pc_src = `PC_SRC_JUMP; alu_op = `F_ADDU; end
-    // // TODO what does jalr do? https://chortle.ccsu.edu/AssemblyTutorial/Chapter-36/ass36_5.html
-    // // seems like jal instead of using jump_addr, using reg_addr
-
 
     // Branch insructions
     `BEQ : begin
@@ -101,7 +93,7 @@ module DECODE
 
     `SW : begin
     wa = rt; ra1 = rs; ra2 = `REG_0; reg_wen = `WREN;
-    imm_ext = `IMM_SIGN_EXT; mem_cmd = `MEM_WRITE; // `IMM_ZERO_EXT
+    imm_ext = `IMM_SIGN_EXT; mem_cmd = `MEM_NOP; // `IMM_ZERO_EXT
     alu_src = `ALU_SRC_IMM; reg_src = `REG_SRC_ALU;
     pc_src = `PC_SRC_NEXT; alu_op = `F_ADDU; end
 
@@ -157,12 +149,12 @@ module DECODE
         alu_src = `ALU_SRC_REG;  reg_src = `REG_SRC_ALU;
         pc_src  = `PC_SRC_NEXT;  alu_op  = `F_BREAK; end// inst[`FLD_FUNCT]; end
 
-        // `JR : begin
-        // wa = rt; ra1 = rs; ra2 = `REG_0; reg_wen = `WDIS;
-        // imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_NOP;
-        // alu_src = `ALU_SRC_REG; reg_src = `REG_SRC_ALU;
-        // pc_src = `PC_SRC_JUMP; alu_op = inst[`FLD_FUNCT]; end
-        // TODO how to make sure rs = reg address and rt = PC? Basically same as J except we will use reg_addr instead of jump_addr
+        `F_JR : begin
+         wa = `REG_0; ra1 = rs; ra2 = `REG_0; reg_wen = `WDIS;
+         imm_ext = `IMM_ZERO_EXT; mem_cmd = `MEM_NOP;
+         alu_src = `ALU_SRC_REG; reg_src = `REG_SRC_ALU;
+         pc_src = `PC_SRC_REGF; alu_op = `F_JR; end
+        // TODO how to make sure rs = reg address. wa is jump address! Basically same as J except we will use reg_addr instead of jump_addr
 
         `F_SYSCAL : begin
         wa = rd; ra1 = `REG_V0; ra2 = `REG_A0; reg_wen = `WDIS;

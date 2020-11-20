@@ -31,7 +31,7 @@ module FETCH
       pc_next = {pc_next[`PC_UPPER], jump_addr, `W_WORD'b0};
       end
       `PC_SRC_REGF : begin
-      pc_next <= reg_addr;
+      pc_next <= {reg_addr};
       end
         default     :  begin
         pc_next <= pc_next + 4; end

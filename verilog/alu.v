@@ -9,7 +9,7 @@ module ALU
   output reg overflow,
   output reg isZero);
 
-  assign isZero = (R == 0); 
+  assign isZero = (R == 0);
   always @* begin
     case(alu_op)
       // math
@@ -74,6 +74,9 @@ module ALU
       `F_SYSCAL : begin
         R = B; // B should be the the result of a
         overflow = 1'b0;
+      end
+      `F_JR : begin
+      {overflow, R} = A + B;
       end
       default : begin
         R =  31'b0; // TODO check this is the right syntax
