@@ -96,7 +96,7 @@ reg [`W_CPU-1:0] data_in;     // input, unused
 reg [`W_CPU-1:0] data_addr;   // input, output of the ALU
 reg [`W_CPU-1:0] data_out;    // data_out, output
 //reg [`W_CPU-1:0] instruction; //instruction, output
-MEMORY stage_MEMORY(clk, rst, pc_current, instruction, mem_cmd, data_in, result, data_out);
+MEMORY stage_MEMORY(clk, rst, pc_current, instruction, mem_cmd, result, result, data_out);
 
 // // // ///
 // Other ///
